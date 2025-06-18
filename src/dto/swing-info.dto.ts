@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsOptional, IsDate } from 'class-validator';
+import { IsNotEmpty, IsString, IsOptional, IsDate, IsInt } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreateSwingInfoDto {
@@ -30,6 +30,17 @@ export class CreateSwingInfoDto {
   @IsNotEmpty()
   @IsString()
   club: string;
+
+  @IsOptional()
+  @IsInt()
+  @Type(() => Number)
+  generation?: number;
 }
 
-export class UpdateSwingInfoDto extends CreateSwingInfoDto {} 
+export class GetInfoDto {
+  action: {
+    params: {
+      generation: number;
+    };
+  };
+} 

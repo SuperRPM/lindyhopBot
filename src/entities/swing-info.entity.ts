@@ -1,5 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
-import { IsNotEmpty, IsString, IsOptional, IsDate } from 'class-validator';
+import { IsNotEmpty, IsString, IsOptional, IsDate, IsInt } from 'class-validator';
 
 @Entity()
 export class SwingInfo {
@@ -39,4 +39,9 @@ export class SwingInfo {
   @IsNotEmpty()
   @IsString()
   club: string;
+
+  @Column({ nullable: true })
+  @IsOptional()
+  @IsInt()
+  generation: number;
 } 
