@@ -42,9 +42,6 @@ export class SwingInfoService {
     const result: { [key: string]: SwingInfo } = {};
     events.forEach((event, index) => {
       const dateKey = event.startTime.toISOString().split('T')[0];
-      if (event === null) {
-        return;
-      }
       result[dateKey] = event;
     });
 
@@ -58,6 +55,30 @@ export class SwingInfoService {
         result[dateKey] = null;
       }
     }
+
+    return result;
+  }
+
+  async getInfoByGeneration(generation: number): Promise<{ [key: string]: SwingInfo }> {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const events = await this.swingInfoRepository.find({
+      where: {
+        generation: generation,
+        startTime: Between(today, new Date('2099-12-31')) // 오늘부터 미래까지
+      },
+      order: {
+        startTime: 'ASC'
+      }
+    });
+
+    // 날짜별로 데이터 그룹화
+    const result: { [key: string]: SwingInfo } = {};
+    events.forEach((event) => {
+      const dateKey = event.startTime.toISOString().split('T')[0];
+      result[dateKey] = event;
+    });
 
     return result;
   }
