@@ -59,8 +59,12 @@ export class SwingInfoController {
       } else {
         text = keys.map(date => {
           const info = result[date];
-          if (!info) return `${date}: 스케줄 없음`;
-          return `${date}:\n장소: ${info.place}\nclub: ${info.club}\n강사: ${info.teacher ?? '-'}\nDJ: ${info.dj ?? '-'}`;
+          if (!info) {
+            const dayOfWeek = new Date(date).toLocaleDateString('ko-KR', { weekday: 'short' });
+            return `${date} (${dayOfWeek}): 스케줄 없음`;
+          }
+          const dayOfWeek = new Date(date).toLocaleDateString('ko-KR', { weekday: 'short' });
+          return `${date} (${dayOfWeek}):\n장소: ${info.place}\nclub: ${info.club}\n강사: ${info.teacher ?? '-'}\nDJ: ${info.dj ?? '-'}`;
         }).join('\n\n');
       }
 
