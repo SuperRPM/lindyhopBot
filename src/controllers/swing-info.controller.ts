@@ -22,8 +22,6 @@ export class SwingInfoController {
     }
   }
 
-
-
   @Post('getInfo')
   async getInfo(@Body() getInfoDto: any) {
     try {
@@ -35,7 +33,15 @@ export class SwingInfoController {
         console.error('Invalid request body structure:', getInfoDto);
         throw new HttpException({
           version: "2.0",
-          data: "Invalid request body structure - generation parameter required"
+          template: {
+            outputs: [
+              {
+                simpleText: {
+                  text: "generation 파라미터가 필요합니다."
+                }
+              }
+            ]
+          }
         }, HttpStatus.BAD_REQUEST);
       }
 
@@ -44,18 +50,45 @@ export class SwingInfoController {
       
       const result = await this.swingInfoService.getInfoByGeneration(generation);
       console.log('Result:', result);
-      
+
+      // schedule 정보를 텍스트로 변환
+      let text = '';
+      const keys = Object.keys(result);
+      if (keys.length === 0) {
+        text = '해당 기수의 스케줄 정보가 없습니다.';
+      } else {
+        text = keys.map(date => {
+          const info = result[date];
+          if (!info) return `${date}: 스케줄 없음`;
+          return `${date}: 장소 - ${info.place}, 클럽 - ${info.club}, 강사 - ${info.teacher ?? '-'}, DJ - ${info.dj ?? '-'}, 시작 - ${info.startTime ? new Date(info.startTime).toLocaleString('ko-KR') : '-'}, 종료 - ${info.endTime ? new Date(info.endTime).toLocaleString('ko-KR') : '-'}`;
+        }).join('\n');
+      }
+
       return {
         version: "2.0",
-        data: {
-          schedule: result
+        template: {
+          outputs: [
+            {
+              simpleText: {
+                text
+              }
+            }
+          ]
         }
       };
     } catch (error) {
       console.error('GetInfo error:', error);
       throw new HttpException({
         version: "2.0",
-        data: "Failed to get info"
+        template: {
+          outputs: [
+            {
+              simpleText: {
+                text: "스케줄 정보를 불러오지 못했습니다."
+              }
+            }
+          ]
+        }
       }, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
