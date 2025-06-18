@@ -18,7 +18,8 @@ export class AfterpartyPlaceService {
 
   async findByDate(date: Date): Promise<AfterpartyPlace> {
     const startOfDay = new Date(date);
-    startOfDay.setHours(0, 0, 0, 0);
+    startOfDay.setDate(startOfDay.getDate() - 1);
+    startOfDay.setHours(18, 0, 0, 0);
     
     const endOfDay = new Date(date);
     endOfDay.setHours(23, 59, 59, 999);
