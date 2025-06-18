@@ -47,7 +47,7 @@ export class SwingInfoController {
     }
   }
 
-  @Get('getInfo')
+  @Post('getInfo')
   async getInfo() {
     try {
       const result = await this.swingInfoService.getNext7DaysInfo();
