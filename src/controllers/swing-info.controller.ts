@@ -60,8 +60,8 @@ export class SwingInfoController {
         text = keys.map(date => {
           const info = result[date];
           if (!info) return `${date}: 스케줄 없음`;
-          return `${date}: 장소 - ${info.place}, 클럽 - ${info.club}, 강사 - ${info.teacher ?? '-'}, DJ - ${info.dj ?? '-'}, 시작 - ${info.startTime ? new Date(info.startTime).toLocaleString('ko-KR') : '-'}, 종료 - ${info.endTime ? new Date(info.endTime).toLocaleString('ko-KR') : '-'}`;
-        }).join('\n');
+          return `${date}:\n장소: ${info.place}\nclub: ${info.club}\n강사: ${info.teacher ?? '-'}\nDJ: ${info.dj ?? '-'}`;
+        }).join('\n\n');
       }
 
       return {
