@@ -1,0 +1,10 @@
+{
+  "action": {
+    "params": {
+      "jitterbug": "지터버그 카페",
+      "regular-first": "첫 번째 정규 장소",
+      "regular-second": "두 번째 정규 장소",
+      "after-regular": "정규 후 장소"
+    }
+  }
+} 
