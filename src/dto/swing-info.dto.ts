@@ -35,6 +35,10 @@ export class CreateSwingInfoDto {
   @IsInt()
   @Type(() => Number)
   generation?: number;
+
+  @IsOptional()
+  @IsString()
+  etc?: string;
 }
 
 export class GetInfoDto {

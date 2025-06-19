@@ -44,4 +44,9 @@ export class SwingInfo {
   @IsOptional()
   @IsInt()
   generation: number;
+
+  @Column({ nullable: true })
+  @IsOptional()
+  @IsString()
+  etc: string;
 } 
