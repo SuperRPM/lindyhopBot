@@ -22,8 +22,6 @@ export class SwingInfoController {
     }
   }
 
-
-
   @Post('getInfo')
   async getInfo(@Body() getInfoDto: any) {
     try {
