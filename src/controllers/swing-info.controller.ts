@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Put, Delete, Body, Param, HttpException, HttpStatus } from '@nestjs/common';
 import { SwingInfoService } from '../services/swing-info.service';
-import { CreateSwingInfoDto, UpdateSwingInfoDto } from '../dto/swing-info.dto';
+import { CreateSwingInfoDto } from '../dto/swing-info.dto';
 
 @Controller('api')
 export class SwingInfoController {
@@ -104,113 +104,6 @@ export class SwingInfoController {
             {
               simpleText: {
                 text: "스케줄 정보를 불러오지 못했습니다."
-              }
-            }
-          ]
-        }
-      }, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-  }
-
-  @Put('updateInfo/:id')
-  async updateInfo(@Param('id') id: number, @Body() updateSwingInfoDto: UpdateSwingInfoDto) {
-    try {
-      console.log('=== UPDATEINFO REQUEST RECEIVED ===');
-      console.log('ID:', id);
-      console.log('Update data:', JSON.stringify(updateSwingInfoDto, null, 2));
-      
-      const result = await this.swingInfoService.update(id, updateSwingInfoDto);
-      
-      if (!result) {
-        throw new HttpException({
-          version: "2.0",
-          template: {
-            outputs: [
-              {
-                simpleText: {
-                  text: "해당 ID의 스케줄 정보를 찾을 수 없습니다."
-                }
-              }
-            ]
-          }
-        }, HttpStatus.NOT_FOUND);
-      }
-
-      return {
-        version: "2.0",
-        template: {
-          outputs: [
-            {
-              simpleText: {
-                text: "스케줄 정보가 성공적으로 수정되었습니다."
-              }
-            }
-          ]
-        }
-      };
-    } catch (error) {
-      console.error('UpdateInfo error:', error);
-      throw new HttpException({
-        version: "2.0",
-        template: {
-          outputs: [
-            {
-              simpleText: {
-                text: "스케줄 정보 수정에 실패했습니다."
-              }
-            }
-          ]
-        }
-      }, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-  }
-
-  @Delete('deleteInfo/:id')
-  async deleteInfo(@Param('id') id: number) {
-    try {
-      console.log('=== DELETEINFO REQUEST RECEIVED ===');
-      console.log('ID:', id);
-      
-      // 먼저 해당 ID의 데이터가 존재하는지 확인
-      const existingInfo = await this.swingInfoService.findOne(id);
-      if (!existingInfo) {
-        throw new HttpException({
-          version: "2.0",
-          template: {
-            outputs: [
-              {
-                simpleText: {
-                  text: "해당 ID의 스케줄 정보를 찾을 수 없습니다."
-                }
-              }
-            ]
-          }
-        }, HttpStatus.NOT_FOUND);
-      }
-
-      await this.swingInfoService.delete(id);
-
-      return {
-        version: "2.0",
-        template: {
-          outputs: [
-            {
-              simpleText: {
-                text: "스케줄 정보가 성공적으로 삭제되었습니다."
-              }
-            }
-          ]
-        }
-      };
-    } catch (error) {
-      console.error('DeleteInfo error:', error);
-      throw new HttpException({
-        version: "2.0",
-        template: {
-          outputs: [
-            {
-              simpleText: {
-                text: "스케줄 정보 삭제에 실패했습니다."
               }
             }
           ]
