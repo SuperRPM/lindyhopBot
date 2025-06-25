@@ -436,19 +436,18 @@
                 return;
             }
 
-            container.innerHTML = schedules.map(schedule => `
+            container.innerHTML = schedules.map(schedule => {
+                // 원본 시간을 그대로 사용
+                const startDate = new Date(schedule.startTime);
+                const dateStr = `${startDate.getFullYear()}년 ${startDate.getMonth() + 1}월 ${startDate.getDate()}일`;
+                const timeStr = `${startDate.getHours().toString().padStart(2, '0')}:${startDate.getMinutes().toString().padStart(2, '0')}`;
+                const dayOfWeek = ['일', '월', '화', '수', '목', '금', '토'][startDate.getDay()];
+                
+                return `
                 <div class="schedule-item">
                     <div class="schedule-header">
                         <div class="schedule-date">
-                            ${new Date(schedule.startTime).toLocaleDateString('ko-KR', {
-                                year: 'numeric',
-                                month: 'long',
-                                day: 'numeric',
-                                weekday: 'long'
-                            })} ${new Date(schedule.startTime).toLocaleTimeString('ko-KR', {
-                                hour: '2-digit',
-                                minute: '2-digit'
-                            })}
+                            ${dateStr} (${dayOfWeek}) ${timeStr}
                         </div>
                         <div class="schedule-actions">
                             <button onclick="editSchedule(${schedule.pk})" class="btn btn-warning">수정</button>
@@ -486,7 +485,8 @@
                         </div>
                     </div>
                 </div>
-            `).join('');
+            `;
+            }).join('');
         }
 
         // 새 스케줄 추가 모달 표시
