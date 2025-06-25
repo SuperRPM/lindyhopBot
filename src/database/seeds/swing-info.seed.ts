@@ -27,7 +27,6 @@ export const swingInfoSeed = async (dataSource: DataSource) => {
       etc: "네오스윙정모"
     },
     {
-      dj: "프리",
       startTime: new Date("2025-07-13T19:00:00"),
       place: "Happy Hall",
       club: "Neo Swing",
