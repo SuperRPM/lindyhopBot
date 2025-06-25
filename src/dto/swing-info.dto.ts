@@ -41,6 +41,47 @@ export class CreateSwingInfoDto {
   etc?: string;
 }
 
+export class UpdateSwingInfoDto {
+  @IsOptional()
+  @IsString()
+  teacher?: string;
+
+  @IsOptional()
+  @IsString()
+  line?: string;
+
+  @IsOptional()
+  @IsString()
+  dj?: string;
+
+  @IsOptional()
+  @IsDate()
+  @Type(() => Date)
+  startTime?: Date;
+
+  @IsOptional()
+  @IsDate()
+  @Type(() => Date)
+  endTime?: Date;
+
+  @IsOptional()
+  @IsString()
+  place?: string;
+
+  @IsOptional()
+  @IsString()
+  club?: string;
+
+  @IsOptional()
+  @IsInt()
+  @Type(() => Number)
+  generation?: number;
+
+  @IsOptional()
+  @IsString()
+  etc?: string;
+}
+
 export class GetInfoDto {
   action: {
     params: {
