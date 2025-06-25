@@ -94,4 +94,8 @@ export class SwingInfoService {
   async findOne(id: number): Promise<SwingInfo> {
     return await this.swingInfoRepository.findOne({ where: { pk: id } });
   }
+
+  async delete(id: number): Promise<void> {
+    await this.swingInfoRepository.delete(id);
+  }
 } 
