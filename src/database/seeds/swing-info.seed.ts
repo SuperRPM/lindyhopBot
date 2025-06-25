@@ -4,6 +4,11 @@ import { SwingInfo } from '../../entities/swing-info.entity';
 export const swingInfoSeed = async (dataSource: DataSource) => {
   const swingInfoRepository = dataSource.getRepository(SwingInfo);
 
+  // 기존 데이터 삭제
+  console.log('Clearing existing swing info data...');
+  await swingInfoRepository.clear();
+  console.log('Existing data cleared');
+
   const sampleData = [
     {
       teacher: "",
@@ -116,9 +121,10 @@ export const swingInfoSeed = async (dataSource: DataSource) => {
     }
   ];
 
-
+  console.log(`Inserting ${sampleData.length} new records...`);
   for (const data of sampleData) {
     const swingInfo = swingInfoRepository.create(data);
     await swingInfoRepository.save(swingInfo);
   }
+  console.log('Seed data inserted successfully');
 }; 
