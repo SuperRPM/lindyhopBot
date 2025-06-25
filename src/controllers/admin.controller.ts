@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, HttpException, HttpStatus, Query } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, HttpException, HttpStatus, Query, Res } from '@nestjs/common';
 import { SwingInfoService } from '../services/swing-info.service';
 import { CreateSwingInfoDto, UpdateSwingInfoDto } from '../dto/swing-info.dto';
 
@@ -29,8 +29,15 @@ export class AdminController {
   }
 
   @Get('swing-info')
-  async getSwingInfoList() {
+  async getSwingInfoList(@Res() res: any) {
     try {
+      // 캐시 방지 헤더 설정
+      res.set({
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      });
+
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
@@ -41,15 +48,15 @@ export class AdminController {
         new Date(event.startTime) >= today
       );
 
-      return {
+      return res.json({
         success: true,
         data: futureEvents
-      };
+      });
     } catch (error) {
-      throw new HttpException({
+      return res.status(500).json({
         success: false,
         message: '스케줄 목록을 불러오는데 실패했습니다.'
-      }, HttpStatus.INTERNAL_SERVER_ERROR);
+      });
     }
   }
 

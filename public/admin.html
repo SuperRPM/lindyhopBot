@@ -437,11 +437,16 @@
             }
 
             container.innerHTML = schedules.map(schedule => {
-                // 원본 시간을 그대로 사용
-                const startDate = new Date(schedule.startTime);
-                const dateStr = `${startDate.getFullYear()}년 ${startDate.getMonth() + 1}월 ${startDate.getDate()}일`;
-                const timeStr = `${startDate.getHours().toString().padStart(2, '0')}:${startDate.getMinutes().toString().padStart(2, '0')}`;
-                const dayOfWeek = ['일', '월', '화', '수', '목', '금', '토'][startDate.getDay()];
+                // UTC 시간을 KST로 변환
+                const utcDate = new Date(schedule.startTime);
+                const dateStr = `${utcDate.getFullYear()}년 ${utcDate.getMonth() + 1}월 ${utcDate.getDate()}일`;
+                const timeStr = `${utcDate.getHours().toString().padStart(2, '0')}:${utcDate.getMinutes().toString().padStart(2, '0')}`;
+                const dayOfWeek = ['일', '월', '화', '수', '목', '금', '토'][utcDate.getDay()];
+                console.log("UTC 시간:", utcDate);
+                console.log("KST 시간:", kstDate);
+                console.log("dayOfWeek:", dayOfWeek);
+                console.log("dateStr:", dateStr);
+                console.log("timeStr:", timeStr);
                 
                 return `
                 <div class="schedule-item">
