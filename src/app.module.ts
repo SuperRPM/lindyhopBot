@@ -6,6 +6,7 @@ import { SwingInfo } from './entities/swing-info.entity';
 import { AfterpartyPlaceController } from './controllers/afterparty-place.controller';
 import { AfterpartyPlaceService } from './services/afterparty-place.service';
 import { AfterpartyPlace } from './entities/afterparty-place.entity';
+import { AdminController } from './controllers/admin.controller';
 
 @Module({
   imports: [
@@ -17,7 +18,7 @@ import { AfterpartyPlace } from './entities/afterparty-place.entity';
     }),
     TypeOrmModule.forFeature([SwingInfo, AfterpartyPlace]),
   ],
-  controllers: [SwingInfoController, AfterpartyPlaceController],
+  controllers: [SwingInfoController, AfterpartyPlaceController, AdminController],
   providers: [SwingInfoService, AfterpartyPlaceService],
 })
 export class AppModule {} 
