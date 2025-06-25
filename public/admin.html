@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>스윙 스케줄 관리</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .login-section {
+            padding: 40px;
+            text-align: center;
+            display: none;
+        }
+
+        .login-section.active {
+            display: block;
+        }
+
+        .admin-section {
+            padding: 40px;
+            display: none;
+        }
+
+        .admin-section.active {
+            display: block;
+        }
+
+        .password-input {
+            width: 300px;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5a6fd8;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .btn-warning:hover {
+            background: #e0a800;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .schedule-list {
+            margin-top: 30px;
+        }
+
+        .schedule-item {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .schedule-item:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .schedule-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .schedule-date {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #495057;
+        }
+
+        .schedule-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .schedule-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .detail-item {
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+        }
+
+        .detail-label {
+            font-weight: bold;
+            color: #495057;
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            color: #6c757d;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #495057;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .add-schedule-btn {
+            background: #28a745;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+        .add-schedule-btn:hover {
+            background: #218838;
+        }
+
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 6px;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>스윙 스케줄 관리</h1>
+            <p>관리자 전용 페이지</p>
+        </div>
+
+        <!-- 로그인 섹션 -->
+        <div id="loginSection" class="login-section active">
+            <h2>관리자 로그인</h2>
+            <p style="margin-bottom: 20px; color: #6c757d;">비밀번호를 입력해주세요</p>
+            <input type="password" id="passwordInput" class="password-input" placeholder="비밀번호 입력">
+            <button onclick="login()" class="btn btn-primary">로그인</button>
+            <div id="loginAlert"></div>
+        </div>
+
+        <!-- 관리자 섹션 -->
+        <div id="adminSection" class="admin-section">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2>스케줄 관리</h2>
+                <button onclick="logout()" class="btn btn-secondary">로그아웃</button>
+            </div>
+            
+            <button onclick="showAddModal()" class="add-schedule-btn">+ 새 스케줄 추가</button>
+            
+            <div id="alertContainer"></div>
+            
+            <div id="scheduleList" class="schedule-list">
+                <div class="loading">로딩 중...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 추가/수정 모달 -->
+    <div id="scheduleModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2 id="modalTitle">스케줄 추가</h2>
+            
+            <form id="scheduleForm">
+                <div class="form-group">
+                    <label class="form-label">장소 *</label>
+                    <input type="text" id="place" class="form-input" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">클럽 *</label>
+                    <input type="text" id="club" class="form-input" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">시작 시간 *</label>
+                    <input type="datetime-local" id="startTime" class="form-input" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">종료 시간</label>
+                    <input type="datetime-local" id="endTime" class="form-input">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">강사</label>
+                    <input type="text" id="teacher" class="form-input">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">DJ</label>
+                    <input type="text" id="dj" class="form-input">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">라인</label>
+                    <input type="text" id="line" class="form-input">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">기수</label>
+                    <input type="number" id="generation" class="form-input">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">기타</label>
+                    <input type="text" id="etc" class="form-input">
+                </div>
+                
+                <div style="text-align: right; margin-top: 20px;">
+                    <button type="button" onclick="closeModal()" class="btn btn-secondary">취소</button>
+                    <button type="submit" class="btn btn-primary">저장</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let isLoggedIn = false;
+        let editingId = null;
+
+        // 로그인
+        async function login() {
+            const password = document.getElementById('passwordInput').value;
+            
+            try {
+                const response = await fetch('/admin/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ password })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    isLoggedIn = true;
+                    document.getElementById('loginSection').classList.remove('active');
+                    document.getElementById('adminSection').classList.add('active');
+                    loadSchedules();
+                } else {
+                    showAlert('비밀번호가 올바르지 않습니다.', 'error', 'loginAlert');
+                }
+            } catch (error) {
+                showAlert('로그인 중 오류가 발생했습니다.', 'error', 'loginAlert');
+            }
+        }
+
+        // 로그아웃
+        function logout() {
+            isLoggedIn = false;
+            document.getElementById('adminSection').classList.remove('active');
+            document.getElementById('loginSection').classList.add('active');
+            document.getElementById('passwordInput').value = '';
+        }
+
+        // 스케줄 목록 로드
+        async function loadSchedules() {
+            try {
+                const response = await fetch('/admin/swing-info');
+                const data = await response.json();
+
+                if (data.success) {
+                    displaySchedules(data.data);
+                } else {
+                    showAlert('스케줄 목록을 불러오는데 실패했습니다.', 'error');
+                }
+            } catch (error) {
+                showAlert('스케줄 목록을 불러오는데 실패했습니다.', 'error');
+            }
+        }
+
+        // 스케줄 목록 표시
+        function displaySchedules(schedules) {
+            const container = document.getElementById('scheduleList');
+            
+            if (schedules.length === 0) {
+                container.innerHTML = '<div class="loading">등록된 스케줄이 없습니다.</div>';
+                return;
+            }
+
+            container.innerHTML = schedules.map(schedule => `
+                <div class="schedule-item">
+                    <div class="schedule-header">
+                        <div class="schedule-date">
+                            ${new Date(schedule.startTime).toLocaleDateString('ko-KR', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric',
+                                weekday: 'long'
+                            })} ${new Date(schedule.startTime).toLocaleTimeString('ko-KR', {
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            })}
+                        </div>
+                        <div class="schedule-actions">
+                            <button onclick="editSchedule(${schedule.pk})" class="btn btn-warning">수정</button>
+                            <button onclick="deleteSchedule(${schedule.pk})" class="btn btn-danger">삭제</button>
+                        </div>
+                    </div>
+                    <div class="schedule-details">
+                        <div class="detail-item">
+                            <div class="detail-label">장소</div>
+                            <div class="detail-value">${schedule.place || '-'}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">클럽</div>
+                            <div class="detail-value">${schedule.club || '-'}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">강사</div>
+                            <div class="detail-value">${schedule.teacher || '-'}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">DJ</div>
+                            <div class="detail-value">${schedule.dj || '-'}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">라인</div>
+                            <div class="detail-value">${schedule.line || '-'}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">기수</div>
+                            <div class="detail-value">${schedule.generation || '-'}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">기타</div>
+                            <div class="detail-value">${schedule.etc || '-'}</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 새 스케줄 추가 모달 표시
+        function showAddModal() {
+            editingId = null;
+            document.getElementById('modalTitle').textContent = '스케줄 추가';
+            document.getElementById('scheduleForm').reset();
+            document.getElementById('scheduleModal').style.display = 'block';
+        }
+
+        // 스케줄 수정 모달 표시
+        async function editSchedule(id) {
+            try {
+                const response = await fetch(`/admin/swing-info`);
+                const data = await response.json();
+
+                if (data.success) {
+                    const schedule = data.data.find(s => s.pk === id);
+                    if (schedule) {
+                        editingId = id;
+                        document.getElementById('modalTitle').textContent = '스케줄 수정';
+                        
+                        // 폼에 데이터 채우기
+                        document.getElementById('place').value = schedule.place || '';
+                        document.getElementById('club').value = schedule.club || '';
+                        document.getElementById('startTime').value = schedule.startTime ? new Date(schedule.startTime).toISOString().slice(0, 16) : '';
+                        document.getElementById('endTime').value = schedule.endTime ? new Date(schedule.endTime).toISOString().slice(0, 16) : '';
+                        document.getElementById('teacher').value = schedule.teacher || '';
+                        document.getElementById('dj').value = schedule.dj || '';
+                        document.getElementById('line').value = schedule.line || '';
+                        document.getElementById('generation').value = schedule.generation || '';
+                        document.getElementById('etc').value = schedule.etc || '';
+                        
+                        document.getElementById('scheduleModal').style.display = 'block';
+                    }
+                }
+            } catch (error) {
+                showAlert('스케줄 정보를 불러오는데 실패했습니다.', 'error');
+            }
+        }
+
+        // 스케줄 삭제
+        async function deleteSchedule(id) {
+            if (!confirm('정말로 이 스케줄을 삭제하시겠습니까?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/admin/swing-info/${id}`, {
+                    method: 'DELETE'
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showAlert('스케줄이 성공적으로 삭제되었습니다.', 'success');
+                    loadSchedules();
+                } else {
+                    showAlert(data.message || '스케줄 삭제에 실패했습니다.', 'error');
+                }
+            } catch (error) {
+                showAlert('스케줄 삭제에 실패했습니다.', 'error');
+            }
+        }
+
+        // 모달 닫기
+        function closeModal() {
+            document.getElementById('scheduleModal').style.display = 'none';
+            editingId = null;
+        }
+
+        // 폼 제출 처리
+        document.getElementById('scheduleForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const formData = {
+                place: document.getElementById('place').value,
+                club: document.getElementById('club').value,
+                startTime: document.getElementById('startTime').value,
+                endTime: document.getElementById('endTime').value || null,
+                teacher: document.getElementById('teacher').value || null,
+                dj: document.getElementById('dj').value || null,
+                line: document.getElementById('line').value || null,
+                generation: document.getElementById('generation').value ? parseInt(document.getElementById('generation').value) : null,
+                etc: document.getElementById('etc').value || null
+            };
+
+            try {
+                const url = editingId ? `/admin/swing-info/${editingId}` : '/admin/swing-info';
+                const method = editingId ? 'PUT' : 'POST';
+
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showAlert(data.message, 'success');
+                    closeModal();
+                    loadSchedules();
+                } else {
+                    showAlert(data.message || '저장에 실패했습니다.', 'error');
+                }
+            } catch (error) {
+                showAlert('저장에 실패했습니다.', 'error');
+            }
+        });
+
+        // 알림 표시
+        function showAlert(message, type, containerId = 'alertContainer') {
+            const container = document.getElementById(containerId);
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.textContent = message;
+            
+            container.innerHTML = '';
+            container.appendChild(alertDiv);
+
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 3000);
+        }
+
+        // Enter 키로 로그인
+        document.getElementById('passwordInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                login();
+            }
+        });
+
+        // 모달 외부 클릭시 닫기
+        window.onclick = function(event) {
+            const modal = document.getElementById('scheduleModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html> 
