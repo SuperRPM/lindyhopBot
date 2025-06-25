@@ -7,56 +7,115 @@ export const swingInfoSeed = async (dataSource: DataSource) => {
   const sampleData = [
     {
       teacher: "",
-      dj: "꼬냥이",
-      startTime: new Date("2025-06-08T19:00:00"),
+      dj: "프리",
+      startTime: new Date("2025-07-06T19:00:00"),
       place: "Happy Hall",
       club: "Neo Swing",
-      etc: "5 주차"
+      generation: 134,
+      etc: "1 주차"
     },
     {
       place: "Happy Hall",
-      startTime: new Date("2025-06-13T19:00:00"),
+      startTime: new Date("2025-07-11T19:00:00"),
       club: "Neo Swing",
-      generation: 133,
+      generation: 134,
+      etc: "네오스윙정모"
     },
     {
-      dj: "쓴귤",
-      startTime: new Date("2025-06-15T19:00:00"),
+      dj: "프리",
+      startTime: new Date("2025-07-13T19:00:00"),
       place: "Happy Hall",
       club: "Neo Swing",
-      generation: 133,
-      etc: "6 주차"
-    },
-    {
-      startTime: new Date("2025-06-20T19:00:00"),
-      place: "Happy Hall",
-      club: "Neo Swing",
-      generation: 133,
-    },
-    {
-      startTime: new Date("2025-06-22T19:00:00"),
-      place: "Happy Hall",
-      club: "",
-      generation: 133,
+      generation: 134,
       etc: "휴강"
     },
     {
-      startTime: new Date("2025-06-27T19:00:00"),
+      startTime: new Date("2025-07-18T19:00:00"),
       place: "Happy Hall",
       club: "Neo Swing",
-      generation: 133,
+      generation: 134,
+      etc: "네오스윙정모"
     },
     {
-      dj: "케이",
-      startTime: new Date("2025-06-29T19:00:00"),
+      startTime: new Date("2025-07-20T19:00:00"),
       place: "Happy Hall",
       club: "Neo Swing",
-      generation: 133,
-      etc: "졸업공연"
+      generation: 134,
+      etc: "2 주차"
     },
-    
-
+    {
+      startTime: new Date("2025-07-25T19:00:00"),
+      place: "Happy Hall",
+      club: "Neo Swing",
+      generation: 134,
+      etc: "네오스윙정모"
+    },
+    {
+      dj: "",
+      startTime: new Date("2025-07-27T19:00:00"),
+      place: "Happy Hall",
+      club: "Neo Swing",
+      generation: 134,
+      etc: "3 주차"
+    },
+    {
+      startTime: new Date("2025-08-01T19:00:00"),
+      place: "Happy Hall",
+      club: "Neo Swing",
+      generation: 134,
+      etc: "네오스윙정모"
+    },
+    {
+      startTime: new Date("2025-08-03T19:00:00"),
+      place: "Happy Hall",
+      club: "Neo Swing",
+      generation: 134,
+      etc: "4 주차"
+    },
+    {
+      startTime: new Date("2025-08-08T19:00:00"),
+      place: "Happy Hall",
+      club: "Neo Swing",
+      generation: 134,
+      etc: "네오스윙정모"
+    },
+    {
+      startTime: new Date("2025-08-10T19:00:00"),
+      place: "Happy Hall",
+      club: "Neo Swing",
+      generation: 134,
+      etc: "5 주차"
+    },
+    {
+      startTime: new Date("2025-08-15T19:00:00"),
+      place: "Happy Hall",
+      club: "Neo Swing",
+      generation: 134,
+      etc: "네오스윙정모"
+    },
+    {
+      startTime: new Date("2025-08-17T19:00:00"),
+      place: "Happy Hall",
+      club: "Neo Swing",
+      generation: 134,
+      etc: "6 주차"
+    },
+    {
+      startTime: new Date("2025-08-22T19:00:00"),
+      place: "Happy Hall",
+      club: "Neo Swing",
+      generation: 134,
+      etc: "네오스윙정모"
+    },
+    {
+      startTime: new Date("2025-08-24T19:00:00"),
+      place: "Happy Hall",
+      club: "Neo Swing",
+      generation: 134,
+      etc: "134기 졸업공연"
+    }
   ];
+
 
   for (const data of sampleData) {
     const swingInfo = swingInfoRepository.create(data);
