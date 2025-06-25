@@ -442,11 +442,6 @@
                 const dateStr = `${utcDate.getFullYear()}년 ${utcDate.getMonth() + 1}월 ${utcDate.getDate()}일`;
                 const timeStr = `${utcDate.getHours().toString().padStart(2, '0')}:${utcDate.getMinutes().toString().padStart(2, '0')}`;
                 const dayOfWeek = ['일', '월', '화', '수', '목', '금', '토'][utcDate.getDay()];
-                console.log("UTC 시간:", utcDate);
-                console.log("KST 시간:", kstDate);
-                console.log("dayOfWeek:", dayOfWeek);
-                console.log("dateStr:", dateStr);
-                console.log("timeStr:", timeStr);
                 
                 return `
                 <div class="schedule-item">
