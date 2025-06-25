@@ -5,6 +5,9 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
 
 async function bootstrap() {
+  // 시간대를 KST로 설정
+  process.env.TZ = 'Asia/Seoul';
+  
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     logger: ['error', 'warn', 'debug', 'log', 'verbose'],
   });
@@ -31,5 +34,7 @@ async function bootstrap() {
   await app.listen(3000);
   console.log('Server is running on http://localhost:3000');
   console.log('Admin page: http://localhost:3000/admin.html');
+  console.log('Current timezone:', process.env.TZ);
+  console.log('Current time:', new Date().toISOString());
 }
 bootstrap(); 
