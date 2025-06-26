@@ -13,6 +13,7 @@ import { AuthController } from './controllers/auth.controller';
 import { AuthService } from './services/auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { User } from './entities/user.entity';
+import { UploadController } from './controllers/upload.controller';
 
 @Module({
   imports: [
@@ -29,7 +30,7 @@ import { User } from './entities/user.entity';
       signOptions: { expiresIn: '24h' },
     }),
   ],
-  controllers: [SwingInfoController, AfterpartyPlaceController, AdminController, AuthController],
+  controllers: [SwingInfoController, AfterpartyPlaceController, AdminController, AuthController, UploadController],
   providers: [SwingInfoService, AfterpartyPlaceService, AuthService, JwtStrategy],
 })
 export class AppModule {} 
