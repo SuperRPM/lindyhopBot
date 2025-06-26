@@ -58,6 +58,31 @@
             display: block;
         }
 
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #495057;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
         .password-input {
             width: 300px;
             padding: 15px;
@@ -120,6 +145,18 @@
 
         .btn-secondary:hover {
             background: #5a6268;
+        }
+
+        .btn-link {
+            background: none;
+            color: #667eea;
+            text-decoration: underline;
+            padding: 5px 10px;
+        }
+
+        .btn-link:hover {
+            background: none;
+            color: #5a6fd8;
         }
 
         .schedule-list {
@@ -214,30 +251,6 @@
             color: #000;
         }
 
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            color: #495057;
-        }
-
-        .form-input {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 6px;
-            font-size: 14px;
-        }
-
-        .form-input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
         .add-schedule-btn {
             background: #28a745;
             color: white;
@@ -276,6 +289,27 @@
             padding: 20px;
             color: #6c757d;
         }
+
+        .login-form {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .forgot-password-link {
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 10px;
+        }
     </style>
 </head>
 <body>
@@ -288,9 +322,26 @@
         <!-- 로그인 섹션 -->
         <div id="loginSection" class="login-section active">
             <h2>관리자 로그인</h2>
-            <p style="margin-bottom: 20px; color: #6c757d;">비밀번호를 입력해주세요</p>
-            <input type="password" id="passwordInput" class="password-input" placeholder="비밀번호 입력">
-            <button onclick="login()" class="btn btn-primary">로그인</button>
+            <p style="margin-bottom: 20px; color: #6c757d;">사용자명과 비밀번호를 입력해주세요</p>
+            
+            <form class="login-form" id="loginForm">
+                <div class="form-group">
+                    <label class="form-label">사용자명</label>
+                    <input type="text" id="username" class="form-input" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">비밀번호</label>
+                    <input type="password" id="password" class="form-input" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">로그인</button>
+            </form>
+            
+            <div class="forgot-password-link">
+                <button onclick="showForgotPasswordModal()" class="btn btn-link">비밀번호를 잊으셨나요?</button>
+            </div>
+            
             <div id="loginAlert"></div>
         </div>
 
@@ -298,7 +349,13 @@
         <div id="adminSection" class="admin-section">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h2>스케줄 관리</h2>
-                <button onclick="logout()" class="btn btn-secondary">로그아웃</button>
+                <div class="user-info">
+                    <span id="currentUser"></span>
+                    <div class="user-actions">
+                        <button onclick="showChangePasswordModal()" class="btn btn-warning">비밀번호 변경</button>
+                        <button onclick="logout()" class="btn btn-secondary">로그아웃</button>
+                    </div>
+                </div>
             </div>
             
             <button onclick="showAddModal()" class="add-schedule-btn">+ 새 스케줄 추가</button>
@@ -371,32 +428,135 @@
         </div>
     </div>
 
+    <!-- 비밀번호 찾기 모달 -->
+    <div id="forgotPasswordModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeForgotPasswordModal()">&times;</span>
+            <h2>비밀번호 찾기</h2>
+            <p style="margin-bottom: 20px; color: #6c757d;">등록된 이메일 주소를 입력해주세요.</p>
+            
+            <form id="forgotPasswordForm">
+                <div class="form-group">
+                    <label class="form-label">이메일</label>
+                    <input type="email" id="forgotEmail" class="form-input" required>
+                </div>
+                
+                <div style="text-align: right; margin-top: 20px;">
+                    <button type="button" onclick="closeForgotPasswordModal()" class="btn btn-secondary">취소</button>
+                    <button type="submit" class="btn btn-primary">비밀번호 재설정</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 비밀번호 변경 모달 -->
+    <div id="changePasswordModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeChangePasswordModal()">&times;</span>
+            <h2>비밀번호 변경</h2>
+            
+            <form id="changePasswordForm">
+                <div class="form-group">
+                    <label class="form-label">현재 비밀번호</label>
+                    <input type="password" id="currentPassword" class="form-input" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">새 비밀번호</label>
+                    <input type="password" id="newPassword" class="form-input" required minlength="6">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">새 비밀번호 확인</label>
+                    <input type="password" id="confirmPassword" class="form-input" required minlength="6">
+                </div>
+                
+                <div style="text-align: right; margin-top: 20px;">
+                    <button type="button" onclick="closeChangePasswordModal()" class="btn btn-secondary">취소</button>
+                    <button type="submit" class="btn btn-primary">변경</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         let isLoggedIn = false;
         let editingId = null;
+        let accessToken = null;
+        let currentUser = null;
+
+        // 페이지 로드 시 토큰 확인
+        window.onload = function() {
+            const token = localStorage.getItem('accessToken');
+            if (token) {
+                accessToken = token;
+                checkAuth();
+            }
+        };
+
+        // 인증 상태 확인
+        async function checkAuth() {
+            try {
+                const response = await fetch('/auth/profile', {
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success) {
+                        currentUser = data.user;
+                        isLoggedIn = true;
+                        document.getElementById('loginSection').classList.remove('active');
+                        document.getElementById('adminSection').classList.add('active');
+                        document.getElementById('currentUser').textContent = `안녕하세요, ${currentUser.username}님`;
+                        loadSchedules();
+                    } else {
+                        logout();
+                    }
+                } else {
+                    logout();
+                }
+            } catch (error) {
+                logout();
+            }
+        }
+
+        // 로그인 폼 제출
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            await login();
+        });
 
         // 로그인
         async function login() {
-            const password = document.getElementById('passwordInput').value;
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
             
             try {
-                const response = await fetch('/admin/login', {
+                const response = await fetch('/auth/login', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ password })
+                    body: JSON.stringify({ username, password })
                 });
 
                 const data = await response.json();
 
                 if (data.success) {
+                    accessToken = data.access_token;
+                    currentUser = data.user;
+                    localStorage.setItem('accessToken', accessToken);
+                    
                     isLoggedIn = true;
                     document.getElementById('loginSection').classList.remove('active');
                     document.getElementById('adminSection').classList.add('active');
+                    document.getElementById('currentUser').textContent = `안녕하세요, ${currentUser.username}님`;
                     loadSchedules();
                 } else {
-                    showAlert('비밀번호가 올바르지 않습니다.', 'error', 'loginAlert');
+                    showAlert('사용자명 또는 비밀번호가 올바르지 않습니다.', 'error', 'loginAlert');
                 }
             } catch (error) {
                 showAlert('로그인 중 오류가 발생했습니다.', 'error', 'loginAlert');
@@ -406,15 +566,22 @@
         // 로그아웃
         function logout() {
             isLoggedIn = false;
+            accessToken = null;
+            currentUser = null;
+            localStorage.removeItem('accessToken');
             document.getElementById('adminSection').classList.remove('active');
             document.getElementById('loginSection').classList.add('active');
-            document.getElementById('passwordInput').value = '';
+            document.getElementById('loginForm').reset();
         }
 
         // 스케줄 목록 로드
         async function loadSchedules() {
             try {
-                const response = await fetch('/admin/swing-info');
+                const response = await fetch('/admin/swing-info', {
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`
+                    }
+                });
                 const data = await response.json();
 
                 if (data.success) {
@@ -500,7 +667,11 @@
         // 스케줄 수정 모달 표시
         async function editSchedule(id) {
             try {
-                const response = await fetch(`/admin/swing-info`);
+                const response = await fetch(`/admin/swing-info`, {
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`
+                    }
+                });
                 const data = await response.json();
 
                 if (data.success) {
@@ -536,7 +707,10 @@
 
             try {
                 const response = await fetch(`/admin/swing-info/${id}`, {
-                    method: 'DELETE'
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`
+                    }
                 });
 
                 const data = await response.json();
@@ -557,6 +731,92 @@
             document.getElementById('scheduleModal').style.display = 'none';
             editingId = null;
         }
+
+        // 비밀번호 찾기 모달 표시
+        function showForgotPasswordModal() {
+            document.getElementById('forgotPasswordModal').style.display = 'block';
+        }
+
+        // 비밀번호 찾기 모달 닫기
+        function closeForgotPasswordModal() {
+            document.getElementById('forgotPasswordModal').style.display = 'none';
+            document.getElementById('forgotPasswordForm').reset();
+        }
+
+        // 비밀번호 변경 모달 표시
+        function showChangePasswordModal() {
+            document.getElementById('changePasswordModal').style.display = 'block';
+        }
+
+        // 비밀번호 변경 모달 닫기
+        function closeChangePasswordModal() {
+            document.getElementById('changePasswordModal').style.display = 'none';
+            document.getElementById('changePasswordForm').reset();
+        }
+
+        // 비밀번호 찾기 폼 제출
+        document.getElementById('forgotPasswordForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('forgotEmail').value;
+            
+            try {
+                const response = await fetch('/auth/forgot-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showAlert('비밀번호 재설정 이메일이 발송되었습니다.', 'success');
+                    closeForgotPasswordModal();
+                } else {
+                    showAlert('비밀번호 재설정에 실패했습니다.', 'error');
+                }
+            } catch (error) {
+                showAlert('비밀번호 재설정에 실패했습니다.', 'error');
+            }
+        });
+
+        // 비밀번호 변경 폼 제출
+        document.getElementById('changePasswordForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (newPassword !== confirmPassword) {
+                showAlert('새 비밀번호가 일치하지 않습니다.', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/auth/change-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${accessToken}`
+                    },
+                    body: JSON.stringify({ currentPassword, newPassword })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showAlert('비밀번호가 성공적으로 변경되었습니다.', 'success');
+                    closeChangePasswordModal();
+                } else {
+                    showAlert(data.message || '비밀번호 변경에 실패했습니다.', 'error');
+                }
+            } catch (error) {
+                showAlert('비밀번호 변경에 실패했습니다.', 'error');
+            }
+        });
 
         // 폼 제출 처리
         document.getElementById('scheduleForm').addEventListener('submit', async function(e) {
@@ -582,6 +842,7 @@
                     method: method,
                     headers: {
                         'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${accessToken}`
                     },
                     body: JSON.stringify(formData)
                 });
@@ -615,18 +876,20 @@
             }, 3000);
         }
 
-        // Enter 키로 로그인
-        document.getElementById('passwordInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                login();
-            }
-        });
-
         // 모달 외부 클릭시 닫기
         window.onclick = function(event) {
-            const modal = document.getElementById('scheduleModal');
-            if (event.target === modal) {
+            const scheduleModal = document.getElementById('scheduleModal');
+            const forgotPasswordModal = document.getElementById('forgotPasswordModal');
+            const changePasswordModal = document.getElementById('changePasswordModal');
+            
+            if (event.target === scheduleModal) {
                 closeModal();
+            }
+            if (event.target === forgotPasswordModal) {
+                closeForgotPasswordModal();
+            }
+            if (event.target === changePasswordModal) {
+                closeChangePasswordModal();
             }
         }
     </script>

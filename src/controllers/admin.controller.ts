@@ -1,32 +1,12 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, HttpException, HttpStatus, Query } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, HttpException, HttpStatus, Query, UseGuards } from '@nestjs/common';
 import { SwingInfoService } from '../services/swing-info.service';
 import { CreateSwingInfoDto, UpdateSwingInfoDto } from '../dto/swing-info.dto';
+import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 
 @Controller('admin')
+@UseGuards(JwtAuthGuard)
 export class AdminController {
   constructor(private readonly swingInfoService: SwingInfoService) {}
-
-  @Post('login')
-  async login(@Body() loginDto: { password: string }) {
-    try {
-      if (loginDto.password !== '134431') {
-        throw new HttpException({
-          success: false,
-          message: '비밀번호가 올바르지 않습니다.'
-        }, HttpStatus.UNAUTHORIZED);
-      }
-
-      return {
-        success: true,
-        message: '로그인 성공'
-      };
-    } catch (error) {
-      throw new HttpException({
-        success: false,
-        message: '로그인에 실패했습니다.'
-      }, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-  }
 
   @Get('swing-info')
   async getSwingInfoList() {
