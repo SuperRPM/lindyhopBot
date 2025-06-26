@@ -1,4 +1,4 @@
-import { Controller, Post, Body, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Body, HttpException, HttpStatus, Get } from '@nestjs/common';
 import { VoteService } from '../services/vote.service';
 import { KakaoChatRequestDto, VoteDto } from '../dto/vote.dto';
 
@@ -6,12 +6,51 @@ import { KakaoChatRequestDto, VoteDto } from '../dto/vote.dto';
 export class VoteController {
   constructor(private readonly voteService: VoteService) {}
 
+  @Get('test-vote')
+  async testVote() {
+    const today = new Date();
+    const dayOfWeek = today.getDay();
+    const availableVenues = this.voteService.getAvailableVenues(dayOfWeek);
+    
+    return {
+      success: true,
+      data: {
+        today: today.toISOString(),
+        dayOfWeek,
+        dayName: ['일', '월', '화', '수', '목', '금', '토'][dayOfWeek],
+        availableVenues,
+        message: this.voteService.getDayMessage(dayOfWeek)
+      }
+    };
+  }
+
   @Post('where-are-you-going')
-  async whereAreYouGoing(@Body() request: KakaoChatRequestDto) {
+  async whereAreYouGoing(@Body() request: any) {
     try {
+      console.log('Received request:', JSON.stringify(request, null, 2));
+      
+      // 요청 구조 검증
+      if (!request || !request.userRequest || !request.userRequest.user) {
+        console.error('Invalid request structure:', request);
+        throw new HttpException({
+          success: false,
+          message: '잘못된 요청 구조입니다.'
+        }, HttpStatus.BAD_REQUEST);
+      }
+
       const userId = request.userRequest.user.id;
+      if (!userId) {
+        console.error('User ID is missing');
+        throw new HttpException({
+          success: false,
+          message: '사용자 ID가 없습니다.'
+        }, HttpStatus.BAD_REQUEST);
+      }
+
       const today = new Date();
       const dayOfWeek = today.getDay(); // 0: 일요일, 5: 금요일, 6: 토요일
+      
+      console.log(`Processing vote for user ${userId} on day ${dayOfWeek}`);
       
       // 투표 가능한 요일인지 확인
       const availableVenues = this.voteService.getAvailableVenues(dayOfWeek);
@@ -49,7 +88,7 @@ export class VoteController {
         message += `\n\n현재 투표: ${this.voteService.getVenueDisplayName(userVote.venue)}`;
       }
 
-      return {
+      const response = {
         version: "2.0",
         template: {
           outputs: [
@@ -69,8 +108,14 @@ export class VoteController {
         }
       };
 
+      console.log('Sending response:', JSON.stringify(response, null, 2));
+      return response;
+
     } catch (error) {
       console.error('Vote error:', error);
+      if (error instanceof HttpException) {
+        throw error;
+      }
       throw new HttpException({
         success: false,
         message: '투표 시스템 오류가 발생했습니다.'
@@ -79,12 +124,25 @@ export class VoteController {
   }
 
   @Post('vote')
-  async vote(@Body() request: KakaoChatRequestDto) {
+  async vote(@Body() request: any) {
     try {
+      console.log('Received vote request:', JSON.stringify(request, null, 2));
+      
+      // 요청 구조 검증
+      if (!request || !request.userRequest || !request.userRequest.user) {
+        console.error('Invalid vote request structure:', request);
+        throw new HttpException({
+          success: false,
+          message: '잘못된 요청 구조입니다.'
+        }, HttpStatus.BAD_REQUEST);
+      }
+
       const userId = request.userRequest.user.id;
       const venue = request.userRequest.utterance; // 발화 내용에서 장소 추출
       const today = new Date();
       const dayOfWeek = today.getDay();
+
+      console.log(`Processing vote: user=${userId}, venue=${venue}, day=${dayOfWeek}`);
 
       // 투표 가능한 요일인지 확인
       const availableVenues = this.voteService.getAvailableVenues(dayOfWeek);
@@ -131,7 +189,7 @@ export class VoteController {
       // 업데이트된 투표 통계 가져오기
       const voteStats = await this.voteService.getVoteStats(today);
 
-      return {
+      const response = {
         version: "2.0",
         template: {
           outputs: [
@@ -149,8 +207,14 @@ export class VoteController {
         }
       };
 
+      console.log('Sending vote response:', JSON.stringify(response, null, 2));
+      return response;
+
     } catch (error) {
       console.error('Vote error:', error);
+      if (error instanceof HttpException) {
+        throw error;
+      }
       throw new HttpException({
         success: false,
         message: '투표 처리 중 오류가 발생했습니다.'
