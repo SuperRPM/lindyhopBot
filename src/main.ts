@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
+import { AuthService } from './services/auth.service';
 
 async function bootstrap() {
   // 시간대를 KST로 설정
@@ -11,6 +12,10 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     logger: ['error', 'warn', 'debug', 'log', 'verbose'],
   });
+  
+  // JSON 파싱 미들웨어 추가
+  app.use(require('express').json());
+  app.use(require('express').urlencoded({ extended: true }));
   
   // 모든 요청 로깅
   app.use((req, res, next) => {
@@ -30,6 +35,10 @@ async function bootstrap() {
 
   // 정적 파일 서빙 설정
   app.useStaticAssets(join(__dirname, '..', 'public'));
+
+  // 초기 관리자 계정 생성
+  const authService = app.get(AuthService);
+  await authService.createInitialAdmin();
 
   await app.listen(3000);
   console.log('Server is running on http://localhost:3000');
