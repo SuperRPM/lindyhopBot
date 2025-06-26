@@ -14,23 +14,26 @@ import { AuthService } from './services/auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { User } from './entities/user.entity';
 import { UploadController } from './controllers/upload.controller';
+import { VoteController } from './controllers/vote.controller';
+import { VoteService } from './services/vote.service';
+import { Vote } from './entities/vote.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'sqlite',
       database: 'swing.db',
-      entities: [SwingInfo, AfterpartyPlace, User],
+      entities: [SwingInfo, AfterpartyPlace, User, Vote],
       synchronize: true,
     }),
-    TypeOrmModule.forFeature([SwingInfo, AfterpartyPlace, User]),
+    TypeOrmModule.forFeature([SwingInfo, AfterpartyPlace, User, Vote]),
     PassportModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET || 'your-secret-key',
       signOptions: { expiresIn: '24h' },
     }),
   ],
-  controllers: [SwingInfoController, AfterpartyPlaceController, AdminController, AuthController, UploadController],
-  providers: [SwingInfoService, AfterpartyPlaceService, AuthService, JwtStrategy],
+  controllers: [SwingInfoController, AfterpartyPlaceController, AdminController, AuthController, UploadController, VoteController],
+  providers: [SwingInfoService, AfterpartyPlaceService, AuthService, JwtStrategy, VoteService],
 })
 export class AppModule {} 
