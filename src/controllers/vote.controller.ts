@@ -72,13 +72,10 @@ export class VoteController {
       // 사용자의 오늘 투표 확인
       const userVote = await this.voteService.getUserTodayVote(userId, today);
       
-      // 투표 통계 가져오기
-      const voteStats = await this.voteService.getVoteStats(today);
-      
-      // 버튼 생성
+      // 버튼 생성 (투표 통계 없이)
       const buttons = availableVenues.map(venue => ({
         action: "block",
-        label: `${this.voteService.getVenueDisplayName(venue)} (${voteStats[venue] || 0}명)`,
+        label: this.voteService.getVenueDisplayName(venue),
         blockId: `${venue}_vote_block_id`
       }));
 
@@ -99,8 +96,8 @@ export class VoteController {
             },
             {
               basicCard: {
-                title: "오늘의 선택지",
-                description: "투표하고 싶은 장소를 선택해주세요!",
+                title: "오늘은 어디로갈까?",
+                description: "출빠할 장소를 선택해주세요!",
                 buttons: buttons
               }
             }
