@@ -74,9 +74,9 @@ export class VoteController {
       
       // 버튼 생성 (투표 통계 없이)
       const buttons = availableVenues.map(venue => ({
-        action: "block",
+        action: "webLink",
         label: this.voteService.getVenueDisplayName(venue),
-        blockId: `${venue}_vote_block_id`
+        webLinkUrl: `http://3.139.6.169:3000/api/vote-action?venue=${venue}`
       }));
 
       // 응답 메시지 구성
@@ -209,6 +209,117 @@ export class VoteController {
 
     } catch (error) {
       console.error('Vote error:', error);
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException({
+        success: false,
+        message: '투표 처리 중 오류가 발생했습니다.'
+      }, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @Post('vote-action')
+  async voteAction(@Body() request: any) {
+    try {
+      console.log('Received vote action request:', JSON.stringify(request, null, 2));
+      
+      // 요청 구조 검증
+      if (!request || !request.userRequest || !request.userRequest.user) {
+        console.error('Invalid vote action request structure:', request);
+        throw new HttpException({
+          success: false,
+          message: '잘못된 요청 구조입니다.'
+        }, HttpStatus.BAD_REQUEST);
+      }
+
+      const userId = request.userRequest.user.id;
+      const today = new Date();
+      const dayOfWeek = today.getDay();
+
+      // 액션 파라미터에서 장소 추출
+      let venue = '';
+      if (request.action && request.action.params) {
+        venue = request.action.params.venue;
+      } else if (request.userRequest.params) {
+        venue = request.userRequest.params.venue;
+      }
+
+      // 장소가 없으면 utterance에서 추출 시도
+      if (!venue && request.userRequest.utterance) {
+        venue = request.userRequest.utterance;
+      }
+
+      console.log(`Processing vote action: user=${userId}, venue=${venue}, day=${dayOfWeek}`);
+
+      // 투표 가능한 요일인지 확인
+      const availableVenues = this.voteService.getAvailableVenues(dayOfWeek);
+      if (availableVenues.length === 0) {
+        return {
+          version: "2.0",
+          template: {
+            outputs: [
+              {
+                simpleText: {
+                  text: "오늘은 투표할 수 없는 날입니다."
+                }
+              }
+            ]
+          }
+        };
+      }
+
+      // 유효한 장소인지 확인
+      if (!availableVenues.includes(venue)) {
+        return {
+          version: "2.0",
+          template: {
+            outputs: [
+              {
+                simpleText: {
+                  text: `오늘은 ${availableVenues.map(v => this.voteService.getVenueDisplayName(v)).join(', ')} 중에서 선택해주세요.`
+                }
+              }
+            ]
+          }
+        };
+      }
+
+      // 투표 저장
+      const voteDto: VoteDto = {
+        userId,
+        venue,
+        voteDate: today
+      };
+      
+      await this.voteService.saveVote(voteDto);
+
+      // 업데이트된 투표 통계 가져오기
+      const voteStats = await this.voteService.getVoteStats(today);
+
+      const response = {
+        version: "2.0",
+        template: {
+          outputs: [
+            {
+              simpleText: {
+                text: `${this.voteService.getVenueDisplayName(venue)}에 투표했습니다!`
+              }
+            },
+            {
+              simpleText: {
+                text: `현재 투표 현황:\n${availableVenues.map(v => `${this.voteService.getVenueDisplayName(v)}: ${voteStats[v] || 0}명`).join('\n')}`
+              }
+            }
+          ]
+        }
+      };
+
+      console.log('Sending vote action response:', JSON.stringify(response, null, 2));
+      return response;
+
+    } catch (error) {
+      console.error('Vote action error:', error);
       if (error instanceof HttpException) {
         throw error;
       }
