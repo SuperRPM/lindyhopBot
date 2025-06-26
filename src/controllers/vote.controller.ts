@@ -241,31 +241,67 @@ export class VoteController {
         voteDate: today
       };
       
-      await this.voteService.saveVote(voteDto);
+      try {
+        const voteResult = await this.voteService.saveVote(voteDto);
+        
+        // 업데이트된 투표 통계 가져오기
+        const voteStats = await this.voteService.getVoteStats(today);
 
-      // 업데이트된 투표 통계 가져오기
-      const voteStats = await this.voteService.getVoteStats(today);
-
-      const response = {
-        version: "2.0",
-        template: {
-          outputs: [
-            {
-              simpleText: {
-                text: `${this.voteService.getVenueDisplayName(venue)}에 투표했습니다!`
-              }
-            },
-            {
-              simpleText: {
-                text: `현재 투표 현황:\n${availableVenues.map(v => `${this.voteService.getVenueDisplayName(v)}: ${voteStats[v] || 0}명`).join('\n')}`
-              }
-            }
-          ]
+        // 응답 메시지 구성
+        let responseMessage = '';
+        if (voteResult.isVoteChange) {
+          responseMessage = `${this.voteService.getVenueDisplayName(voteResult.previousVenue)}에서 ${this.voteService.getVenueDisplayName(venue)}로 투표를 변경했습니다!`;
+        } else {
+          responseMessage = `${this.voteService.getVenueDisplayName(venue)}에 투표했습니다!`;
         }
-      };
 
-      console.log(`Sending vote response for ${venue}:`, JSON.stringify(response, null, 2));
-      return response;
+        const response = {
+          version: "2.0",
+          template: {
+            outputs: [
+              {
+                simpleText: {
+                  text: responseMessage
+                }
+              },
+              {
+                simpleText: {
+                  text: `현재 투표 현황:\n${availableVenues.map(v => `${this.voteService.getVenueDisplayName(v)}: ${voteStats[v] || 0}명`).join('\n')}`
+                }
+              }
+            ]
+          }
+        };
+
+        console.log(`Sending vote response for ${venue}:`, JSON.stringify(response, null, 2));
+        return response;
+
+      } catch (error) {
+        if (error.message === 'ALREADY_VOTED_SAME_VENUE') {
+          // 같은 장소에 이미 투표한 경우
+          const voteStats = await this.voteService.getVoteStats(today);
+          
+          return {
+            version: "2.0",
+            template: {
+              outputs: [
+                {
+                  simpleText: {
+                    text: `이미 ${this.voteService.getVenueDisplayName(venue)}에 투표하셨습니다!`
+                  }
+                },
+                {
+                  simpleText: {
+                    text: `현재 투표 현황:\n${availableVenues.map(v => `${this.voteService.getVenueDisplayName(v)}: ${voteStats[v] || 0}명`).join('\n')}`
+                  }
+                }
+              ]
+            }
+          };
+        } else {
+          throw error;
+        }
+      }
 
     } catch (error) {
       console.error(`Vote error for ${venue}:`, error);
