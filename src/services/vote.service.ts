@@ -14,6 +14,8 @@ export class VoteService {
   // 요일에 따른 투표 가능한 장소들 반환
   getAvailableVenues(dayOfWeek: number): string[] {
     switch (dayOfWeek) {
+      case 4: // 목요일
+        return ['happy', 'savoy'];
       case 5: // 금요일
         return ['happy', 'socialClub'];
       case 6: // 토요일
@@ -31,6 +33,8 @@ export class VoteService {
     const dayName = dayNames[dayOfWeek];
     
     switch (dayOfWeek) {
+      case 4: // 목요일
+        return `오늘은 ${dayName}요일! 어디로 갈까요?`;
       case 5: // 금요일
         return `오늘은 ${dayName}요일! 어디로 갈까요?`;
       case 6: // 토요일
