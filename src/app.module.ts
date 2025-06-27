@@ -17,6 +17,8 @@ import { UploadController } from './controllers/upload.controller';
 import { VoteController } from './controllers/vote.controller';
 import { VoteService } from './services/vote.service';
 import { Vote } from './entities/vote.entity';
+import { ReceiptController } from './controllers/receipt.controller';
+import { AiReceiptService } from './services/ai-receipt.service';
 
 @Module({
   imports: [
@@ -33,7 +35,7 @@ import { Vote } from './entities/vote.entity';
       signOptions: { expiresIn: '24h' },
     }),
   ],
-  controllers: [SwingInfoController, AfterpartyPlaceController, AdminController, AuthController, UploadController, VoteController],
-  providers: [SwingInfoService, AfterpartyPlaceService, AuthService, JwtStrategy, VoteService],
+  controllers: [SwingInfoController, AfterpartyPlaceController, AdminController, AuthController, UploadController, VoteController, ReceiptController],
+  providers: [SwingInfoService, AfterpartyPlaceService, AuthService, JwtStrategy, VoteService, AiReceiptService],
 })
 export class AppModule {} 
