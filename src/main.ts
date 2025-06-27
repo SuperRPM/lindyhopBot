@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
@@ -13,9 +14,9 @@ async function bootstrap() {
     logger: ['error', 'warn', 'debug', 'log', 'verbose'],
   });
   
-  // JSON 파싱 미들웨어 추가
-  app.use(require('express').json());
-  app.use(require('express').urlencoded({ extended: true }));
+  // 요청 크기 제한 늘리기 (50MB)
+  app.use(require('express').json({ limit: '50mb' }));
+  app.use(require('express').urlencoded({ extended: true, limit: '50mb' }));
   
   // 모든 요청 로깅
   app.use((req, res, next) => {
