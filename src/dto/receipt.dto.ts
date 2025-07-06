@@ -1,9 +1,29 @@
-import { IsString, IsNotEmpty } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional, IsNumber } from 'class-validator';
 
 export class ReceiptAnalysisDto {
   @IsString()
   @IsNotEmpty()
   imageBase64: string;
+
+  @IsString()
+  @IsOptional()
+  originalName?: string;
+
+  @IsString()
+  @IsOptional()
+  mimeType?: string;
+
+  @IsString()
+  @IsOptional()
+  settlementId?: string;
+
+  @IsNumber()
+  @IsOptional()
+  generation?: number;
+
+  @IsNumber()
+  @IsOptional()
+  classNumber?: number;
 }
 
 export class ReceiptItemDto {

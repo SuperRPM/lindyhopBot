@@ -1,11 +1,13 @@
-import { Controller, Post, Body, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Body, HttpException, HttpStatus, UseGuards } from '@nestjs/common';
 import { AiReceiptService } from '../services/ai-receipt.service';
 import { ReceiptAnalysisDto } from '../dto/receipt.dto';
+import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 
 @Controller('api')
 export class ReceiptController {
   constructor(private readonly aiReceiptService: AiReceiptService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Post('analyze-receipt')
   async analyzeReceipt(@Body() request: ReceiptAnalysisDto) {
     try {
@@ -48,8 +50,22 @@ export class ReceiptController {
 
       console.log('Image data length (after header removal):', imageData.length);
 
-      // AI 분석 실행
-      const result = await this.aiReceiptService.analyzeReceipt(imageData);
+      // 파일 정보 추출
+      const originalName = request.originalName || 'receipt.jpg';
+      const mimeType = request.mimeType || 'image/jpeg';
+      const settlementId = request.settlementId;
+      const generation = request.generation;
+      const classNumber = request.classNumber;
+
+      // AI 분석 실행 (이미지 저장 포함)
+      const result = await this.aiReceiptService.analyzeReceipt(
+        imageData,
+        originalName,
+        mimeType,
+        settlementId,
+        generation,
+        classNumber
+      );
       
       console.log('Receipt analysis completed successfully');
       return result;
