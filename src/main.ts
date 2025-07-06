@@ -16,6 +16,42 @@ async function bootstrap() {
     logger: ['error', 'warn', 'debug', 'log', 'verbose'],
   });
   
+  // CORS 설정 추가
+  app.enableCors({
+    origin: [
+      'https://nbreadfortest.glitch.me',
+      'https://nbread.glitch.me',
+      // 카카오 챗봇 관련 도메인
+      'https://kakao.com',
+      'https://www.kakao.com',
+      'https://developers.kakao.com',
+      'https://chatbot.kakao.com',
+      'https://kakaoi.talk.kakao.com',
+      'https://kakaoi.talk.kakao.com:443',
+      'https://kakaoi.talk.kakao.com:80',
+      'https://kakaoi.talk.kakao.com:3000',
+      'https://kakaoi.talk.kakao.com:8080',
+      // 카카오톡 앱에서 오는 요청 (User-Agent 기반)
+      'https://kakao.com',
+      'https://*.kakao.com',
+      'https://*.kakaoi.talk.kakao.com',
+      // 개발용 localhost
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'http://localhost:8080',
+      'http://127.0.0.1:3000',
+      'http://127.0.0.1:3001',
+      'http://127.0.0.1:8080',
+      'https://localhost:3000',
+      'https://localhost:3001',
+      'https://127.0.0.1:3000',
+      'https://127.0.0.1:3001',
+    ],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'User-Agent'],
+    credentials: true,
+  });
+  
   // 요청 크기 제한 늘리기 (50MB)
   app.use(require('express').json({ limit: '50mb' }));
   app.use(require('express').urlencoded({ extended: true, limit: '50mb' }));
@@ -64,6 +100,11 @@ async function bootstrap() {
         console.log(`Admin page: https://localhost:${port}/admin.html`);
         console.log('Current timezone:', process.env.TZ);
         console.log('Current time:', new Date().toISOString());
+        console.log('CORS enabled for:', [
+          'https://nbreadfortest.glitch.me',
+          'https://nbread.glitch.me',
+          'localhost domains'
+        ]);
       });
     } catch (error) {
       console.error('SSL 인증서 파일을 찾을 수 없습니다. HTTP로 실행합니다.');
@@ -74,6 +115,11 @@ async function bootstrap() {
       console.log(`Admin page: http://localhost:${port}/admin.html`);
       console.log('Current timezone:', process.env.TZ);
       console.log('Current time:', new Date().toISOString());
+      console.log('CORS enabled for:', [
+        'https://nbreadfortest.glitch.me',
+        'https://nbread.glitch.me',
+        'localhost domains'
+      ]);
     }
   } else {
     await app.listen(port);
@@ -81,6 +127,11 @@ async function bootstrap() {
     console.log(`Admin page: http://localhost:${port}/admin.html`);
     console.log('Current timezone:', process.env.TZ);
     console.log('Current time:', new Date().toISOString());
+    console.log('CORS enabled for:', [
+      'https://nbreadfortest.glitch.me',
+      'https://nbread.glitch.me',
+      'localhost domains'
+    ]);
   }
 }
 bootstrap(); 
