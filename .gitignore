@@ -39,4 +39,14 @@ lerna-debug.log*
 *.db
 
 # npm
-package-lock.json 
+package-lock.json
+
+# SSL Certificates and Keys (SECURITY)
+/ssl/
+*.key
+*.pem
+*.crt
+*.p12
+*.pfx
+*.cer
+*.der 
