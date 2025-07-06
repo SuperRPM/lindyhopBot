@@ -7,7 +7,7 @@ import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 export class ReceiptController {
   constructor(private readonly aiReceiptService: AiReceiptService) {}
 
-  @UseGuards(JwtAuthGuard)
+  // JWT 인증 제거 - 인증 없이도 호출 가능
   @Post('analyze-receipt')
   async analyzeReceipt(@Body() request: ReceiptAnalysisDto) {
     try {
