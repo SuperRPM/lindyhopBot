@@ -46,6 +46,8 @@ async function bootstrap() {
       'https://localhost:3001',
       'https://127.0.0.1:3000',
       'https://127.0.0.1:3001',
+      // github io
+      "https://eternal6lue.github.io/nbread-eo",
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'User-Agent'],
